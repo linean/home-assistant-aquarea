@@ -13,6 +13,44 @@ A Home Assistant custom integration for Panasonic Aquarea heat pumps. It consist
 - `docs/integration_overview.md` — architecture, data flow, and entity implementation details for the HA integration
 - `docs/aioaquarea_library.md` — aioaquarea library internals: auth flow, data models, API endpoints, JSON examples
 - `docs/improvements.md` — known bugs and planned architectural improvements
+- `CHANGELOG.md` (on `main` branch only) — fork-vs-upstream diffs and known outstanding bugs from 2026-05 audit
+
+## Fork operations (this checkout is a personal fork)
+
+### Remotes
+- `origin` → `wpatrik14/home-assistant-aquarea` (upstream, read-only)
+- `linean` → personal fork (push target for everything)
+
+### Branch layout on `linean`
+- `main` — personal releases with local fixes (date-versioned `YYYYMM.N`, not SemVer)
+- `upstream` — mirror of `wpatrik14/main` for syncing upstream changes
+
+Sync upstream into fork:
+```
+git fetch origin
+git push linean origin/main:upstream
+git checkout main && git merge upstream && git push linean main
+```
+
+### Release workflow
+**Only bump `custom_components/aquarea/manifest.json` `version` when there are actual addon code changes (anything under `custom_components/aquarea/`).** Docs-only changes (README, CHANGELOG) must NOT bump the version — users would re-download identical addon files via HACS.
+
+When addon code changes:
+1. Edit `custom_components/aquarea/manifest.json` → bump `version` to next `YYYYMM.N`
+2. Update `CHANGELOG.md`
+3. Commit
+4. `git tag -a <version> -m "Release <version>"`
+5. `git push linean main && git push linean <version>`
+6. `gh release create <version> --repo linean/home-assistant-aquarea --title <version> --notes "..."`
+
+### HACS
+- Install URL: `https://github.com/linean/home-assistant-aquarea`
+- HACS reads GitHub releases; both tag and release object required
+
+### Fork divergence notes
+- `.github/workflows/` deleted on `linean/main`; do NOT reintroduce
+- `CHANGELOG.md` baseline: `wpatrik14/main @ 8d0e645`
+- Non-`main` branches (`fix-*`) still carry original upstream README/manifest — fork-specific content lives on `main` only
 
 ## Commands
 
