@@ -80,6 +80,9 @@
         "outdoor_temperature": {
           "name": "Outdoor temperature"
         },
+        "tank_temperature": {
+          "name": "Tank temperature"
+        },
         "pump_status": {
           "name": "Pump status"
         },

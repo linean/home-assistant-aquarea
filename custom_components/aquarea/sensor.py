@@ -160,6 +160,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
             icon="mdi:snowflake-melt",
             detector=_is_defrosting,
         ))
+        if coordinator.device.has_tank:
+            entities.append(TankTemperatureSensor(coordinator))
         entities.extend([EnergyAccumulatedConsumptionSensor(description, coordinator) for description in ACCUMULATED_ENERGY_SENSORS if description.exists_fn(coordinator)])
         entities.extend([EnergyConsumptionSensor(description, coordinator) for description in ENERGY_SENSORS if description.exists_fn(coordinator)])
     async_add_entities(entities)
@@ -216,6 +218,22 @@ class OutdoorTemperatureSensor(AquareaBaseEntity, SensorEntity):
         if self.coordinator.device is None:
             return
         self._attr_native_value = self.coordinator.device.temperature_outdoor
+        super()._handle_coordinator_update()
+
+class TankTemperatureSensor(AquareaBaseEntity, SensorEntity):
+    def __init__(self, coordinator: AquareaDataUpdateCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_translation_key = "tank_temperature"
+        self._attr_unique_id = f"{super().unique_id}_tank_temperature"
+        self._attr_device_class = SensorDeviceClass.TEMPERATURE
+        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        if self.coordinator.device is None:
+            return
+        self._attr_native_value = self.coordinator.device.tank.temperature
         super()._handle_coordinator_update()
 
 class PumpDirectionSensor(AquareaBaseEntity, SensorEntity):
@@ -290,7 +308,6 @@ class EnergyAccumulatedConsumptionSensor(AquareaBaseEntity, SensorEntity, Restor
                     dt_str = c.data_time
                     if not dt_str:
                         continue
-                    # Robust parsing: try multiple formats or handle unexpected changes
                     item_date = None
                     for fmt in ("%Y%m%d", "%Y-%m-%d"):
                         try:
@@ -298,7 +315,7 @@ class EnergyAccumulatedConsumptionSensor(AquareaBaseEntity, SensorEntity, Restor
                             break
                         except ValueError:
                             continue
-                    
+
                     if item_date is None:
                         _LOGGER.warning("Unexpected date format for month consumption: %s", dt_str)
                         continue

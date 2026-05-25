@@ -63,6 +63,7 @@ class WaterHeater(AquareaBaseEntity, WaterHeaterEntity):
         self._attr_supported_features = (
             WaterHeaterEntityFeature.TARGET_TEMPERATURE
             | WaterHeaterEntityFeature.OPERATION_MODE
+            | WaterHeaterEntityFeature.ON_OFF
         )
         self._attr_operation_list = [HEATING, STATE_OFF]
         self._attr_precision = PRECISION_WHOLE
@@ -108,16 +109,13 @@ class WaterHeater(AquareaBaseEntity, WaterHeaterEntity):
             is_heating = True
         else:
             try:
-                # Prefer explicit enum comparisons if available
                 if current_action in (DeviceAction.HEATING_WATER, DeviceAction.HEATING, getattr(DeviceAction, "WATER_HEATING", None)):
                     is_heating = True
                 else:
-                    # Fallback: check name/value for common substrings (robust against enum changes)
                     action_name = str(current_action).upper()
                     if "HEAT" in action_name or "WATER" in action_name or "TANK" in action_name:
                         is_heating = True
             except (AttributeError, TypeError):
-                # On any unexpected value, conservatively treat as not heating
                 is_heating = False
 
         self._attr_current_operation = HEATING if is_heating else IDLE
@@ -139,6 +137,12 @@ class WaterHeater(AquareaBaseEntity, WaterHeaterEntity):
                 getattr(self.coordinator.device, "device_id", "unknown"),
             )
 
+    async def async_turn_on(self, **kwargs) -> None:
+        await self.async_set_operation_mode(HEATING)
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.async_set_operation_mode(STATE_OFF)
+
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         temperature: float | None = kwargs.get(ATTR_TEMPERATURE)
@@ -148,13 +152,11 @@ class WaterHeater(AquareaBaseEntity, WaterHeaterEntity):
                 self.coordinator.device.device_id,
                 str(temperature),
             )
-            # Optimistic update
             self._attr_target_temperature = temperature
             self.async_write_ha_state()
 
             await self.coordinator.device.tank.set_target_temperature(int(temperature))
 
-            # Schedule a single delayed refresh (non-blocking)
             self.hass.async_create_task(self._schedule_refresh(WATER_HEATER_DELAY))
 
     async def async_set_operation_mode(self, operation_mode):
@@ -163,17 +165,15 @@ class WaterHeater(AquareaBaseEntity, WaterHeaterEntity):
             self.coordinator.device.device_id,
             operation_mode,
         )
-        # Optimistic update
         if operation_mode == HEATING:
             self._attr_state = STATE_HEAT_PUMP
-            self._attr_current_operation = IDLE # It will be updated to HEATING on next refresh if active
+            self._attr_current_operation = IDLE
             await self.coordinator.device.tank.turn_on()
         elif operation_mode == STATE_OFF:
             self._attr_state = STATE_OFF
             self._attr_current_operation = STATE_OFF
             await self.coordinator.device.tank.turn_off()
-        
+
         self.async_write_ha_state()
 
-        # Schedule a single delayed refresh (non-blocking)
         self.hass.async_create_task(self._schedule_refresh(WATER_HEATER_DELAY))
