@@ -8,6 +8,16 @@ Upstream baseline: `wpatrik14/main @ 8d0e645` ("Refactoring").
 
 ---
 
+## [202605.7] — 2026-05-25
+
+### Added (fork-only)
+- **DHW heating cycles today** sensor — counts low→high transitions of pump direction to `WATER` per local day.
+- **Defrost cycles today** sensor — counts low→high transitions of `device_mode_status == DEFROST` per local day.
+
+Both reset at local midnight, persist counts across restarts via `RestoreEntity`, and expose `last_reset` so HA long-term statistics handle the daily reset cleanly (`SensorStateClass.TOTAL`). Edge detection is polled at the coordinator's 1-minute interval — a transition shorter than that may be missed. (`custom_components/aquarea/sensor.py`)
+
+---
+
 ## [202605.6] — 2026-05-25
 
 ### Changed
