@@ -177,6 +177,8 @@ class AquareaDataUpdateCoordinator(DataUpdateCoordinator):
                 aioaquarea.AuthenticationErrorCodes.INVALID_CREDENTIALS,
             ):
                 raise ConfigEntryAuthFailed from err
+            else:
+                raise UpdateFailed(f"Authentication error: {err}") from err
         except aioaquarea.errors.RequestFailedError as err:
             raise UpdateFailed(
                 f"Error communicating with Aquarea Smart Cloud API: {err}"
