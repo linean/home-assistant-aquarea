@@ -4,6 +4,8 @@
 
 Personal fork of [wpatrik14/home-assistant-aquarea](https://github.com/wpatrik14/home-assistant-aquarea). Carries local fixes on top of upstream until merged there.
 
+See [CHANGELOG.md](./CHANGELOG.md) for per-release differences from upstream.
+
 ## Local changes on top of upstream `main`
 
 - Coordinator raises `UpdateFailed` on transient `AuthenticationError` instead of returning `None` (prevents entity crashes during token re-login glitches).
