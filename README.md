@@ -1,107 +1,27 @@
-# Manage Panasonic Aquarea Smart Cloud devices from Home Assistant
+# home-assistant-aquarea (personal fork)
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-![GitHub Release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/linean/home-assistant-aquarea?include_prereleases)
+![GitHub Release](https://img.shields.io/github/v/release/linean/home-assistant-aquarea?include_prereleases)
 
-> **Personal fork.** This repository is a fork of [wpatrik14/home-assistant-aquarea](https://github.com/wpatrik14/home-assistant-aquarea) maintained for personal use. It carries local fixes on top of upstream until they are merged there.
->
-> **Local changes on top of upstream `main`:**
-> - Coordinator raises `UpdateFailed` on transient `AuthenticationError` instead of returning `None` (prevents entity crashes during token re-login glitches).
-> - Removed redundant double-refresh burst on HA startup/reload (was doubling Panasonic Cloud API load per device, risk of IP throttling).
-> - GitHub Actions workflows dropped (CI is run upstream only).
-> - Date-based release versions (e.g. `202605.1`) instead of SemVer.
->
-> The `upstream` branch in this fork mirrors `wpatrik14/main` for syncing.
->
-> **Install via HACS:** add `https://github.com/linean/home-assistant-aquarea` as a custom integration repository, then pick the desired release. For the original integration use the upstream repo instead.
+Personal fork of [wpatrik14/home-assistant-aquarea](https://github.com/wpatrik14/home-assistant-aquarea). Carries local fixes on top of upstream until merged there.
 
-Panasonic Aquarea Smart Cloud is a cloud service that allows you to control your Panasonic Aquarea heat pump from your smartphone. This integration allows you to control your heat pump from Home Assistant.
+## Local changes on top of upstream `main`
 
-This is a fork of the original integration by [cjaliaga](https://github.com/cjaliaga/home-assistant-aquarea).
+- Coordinator raises `UpdateFailed` on transient `AuthenticationError` instead of returning `None` (prevents entity crashes during token re-login glitches).
+- Removed redundant double-refresh burst on HA startup/reload (was doubling Panasonic Cloud API load per device, risk of IP throttling).
+- Cherry-picked upstream: today energy sensor fix, aioaquarea 1.0.7.
+- GitHub Actions workflows dropped (CI runs upstream only).
+- Date-based release versions (e.g. `202605.3`) instead of SemVer.
 
-The integration uses [aioaquarea](https://github.com/cjaliaga/aioaquarea) to communicate with the Panasonic Aquarea Smart Cloud service.
+## Branches
 
-This integration is currently in beta. Please report any issues you find and any feedback you may have. Thanks!
+- `main` — personal releases.
+- `upstream` — mirror of `wpatrik14/main` for syncing.
 
-## ⚠️ As of March 18th, 2024 Panasonic changed the way to log into Aquarea Smart Cloud
-* Changes has been merged and released with version > 0.7.0 thanks to priceless [bimusiek](https://github.com/bimusiek) help.
-* The investigation was performed in the [aioaquarea](https://github.com/cjaliaga/aioaquarea) repository: https://github.com/cjaliaga/aioaquarea/issues/44
+## Install via HACS
 
-## Features
-* Climate entity per device zone that allows you to control the operation mode, read the current temperature of the water in the device/zone and (if the zone supports it), change the target temperature.
-* Sensor entity for the outdoor temperature.
-* Water heater entity for the hot water tank (if the device has one), that allows you to control the operation mode (enabled/disabled) and read the current temperature of the water in the tank.
-* Diagnostic sensor to indicate if the device has any problem (such not enough water flow).
-* Energy consumption sensors (accumulated and sensors that reset the cycle every hour)
-* Quiet mode select entity
-* Request defrost
-* Powerful mode select entity
-* Holiday timer
-* Force DHW
-* Force heater
-* Set the device in eco mode/comfort mode (if the device supports it).
+1. HACS → 3-dot menu → Custom repositories
+2. Repository: `https://github.com/linean/home-assistant-aquarea`, Type: Integration
+3. Download → pick latest release
+4. Restart Home Assistant
 
-## Features in the works
-* ~~Weekly schedule.~~
-* Improve translations
-* Rework of the water tank entity
-* Additional sensors/switches for the device.
-
-## Remarks
-Panasonic only allows one connection per account at the same time. This means that if you open the session from the Panasonic Comfort Cloud app or the Panasonic Comfort Cloud website, the session will be closed and you will be disconnected from Home Assistant. The integration will try to reconnect automatically, closing the session from the app or the website. If you want to use the app or the website, you will have to temporarily disable the integration.
-
-A possible solution to this behaviour is to create a second account specifically for home assistant.
-1. Go to https://csapl.pcpf.panasonic.com/ and create a new account.
-2. Then login with your new account into https://aquarea-smart.panasonic.com/.
-3. You will be asked to enter your device id and your password. Enter the device id which is label on your Wifi Module (e.g. CZ-TAW1) and your password which you already created with your main account.
-4. Now you will get a user request to your main account. It should be somewhere under `Users` -> `Userlist`. Accept this user request.
-5. Use the new panasonic account to setup your "Panasonic Aquarea Smart Cloud" home assistant integration.  
-
-Now it should be possible to access the aquarea smart cloud website and also use the home assistant integration at the same time.
-
-### Minimum Home Assistant version required
-The minimum supported version of Home Assistant is **2024.2**
-
-## Installation
-
-### Using [HACS](https://hacs.xyz/) (recommended)
-
-1. Download the integration via (one of them):
-   - [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=wpatrik14&repository=home-assistant-aquarea&category=integration)
-   - Go to HACS > Integrations > Look for "Aquarea" 
-
-2. Restart Home Assistant
-3. Add integration via (one of them):
-   - [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=aquarea)
-   - Go to "Settings" >> "Devices & Services", click "+ ADD INTEGRATION" and select "Aquarea Smart Cloud"
-4. Follow the configuration steps. You'll need to provide your Panasonic ID and your password. The integration will discover the devices associated to your Panasonic ID. 
-
-### Manual installation
-1. Copy the folder named `aquarea` from the [latest release](https://github.com/wpatrik14/home-assistant-aquarea/releases/latest) to the `custom_components` folder in your config folder.
-2. Restart Home Assistant
-3. Add integration via (one of them):
-   - [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=aquarea)
-   - Go to "Settings" >> "Devices & Services", click "+ ADD INTEGRATION" and select "Aquarea Smart Cloud"
-4. Follow the configuration steps. You'll need to provide your Panasonic ID and your password. The integration will discover the devices associated to your Panasonic ID.
-
-## ⚠️ Update to v0.2.0 from v0.1.X
-If you are updating from a version prior to v0.2.0, the recommendation is for you to remove the integration and add it again before updating. This is because v0.2.0 introduces a breaking change in the unique id generation for the entities. If you don't remove the integration and add it again, you will end up with duplicate entities.
-
-This is a one time thing during the beta that was needed in order to support multiple devices and zones. From now on, the unique id generation will be stable and you won't need to remove the integration and add it again.
-
-## Warning
-This integration is currently in beta. It supports several devices but it has been tested with a single device. If you have multiple devices under the same Panasonic ID, please test it and report any issue you find.
-
-The integration also supports devices with several zones, but it has not been tested with multiple zones. If you have a device with multiple zones, please test it and report any issue you find.
-
-The integration has been tested with a heat pump with a hot water tank, but it has not been tested with a heat pump without a hot water tank. If you have a heat pump without a hot water tank, please test it and report any issue you find.
-
-## Disclaimer
-
-THIS PROJECT IS NOT IN ANY WAY ASSOCIATED WITH OR RELATED TO PANASONIC. The information here and online is for educational and resource purposes only and therefore the developers do not endorse or condone any inappropriate use of it, and take no legal responsibility for the functionality or security of your devices.
-
-## Acknowledgements and alternatives
-
-- Big thanks to [cjaliaga](https://github.com/cjaliaga) for the original work on this integration.
-- Big thanks to [ronhks](https://github.com/ronhks) for his awesome work on the [Panasonic Aquaera Smart Cloud integration with MQTT](https://github.com/ronhks/panasonic-aquarea-smart-cloud-mqtt). You can use his integration if you want to use MQTT instead.
-- Panasonic introduced authentication breaking changes on March 18th 2024. A heartfelt thank you to [bimusiek](https://github.com/bimusiek) for generously sharing their implementation in the [Homebridge plugin](https://github.com/Hernas/homebridge-panasonic-heat-pump). Their contribution played a crucial role in having the integration working back, and I am truly grateful for their remarkable help.
+For the original integration, docs, and feature list see [upstream](https://github.com/wpatrik14/home-assistant-aquarea).
