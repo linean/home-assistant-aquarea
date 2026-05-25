@@ -2,15 +2,11 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/linean/home-assistant-aquarea?include_prereleases)
 
-Personal fork of [wpatrik14/home-assistant-aquarea](https://github.com/wpatrik14/home-assistant-aquarea). Carries local fixes on top of upstream until merged there.
-
-See [CHANGELOG.md](./CHANGELOG.md) for per-release differences from upstream.
+Personal fork of [wpatrik14/home-assistant-aquarea](https://github.com/wpatrik14/home-assistant-aquarea). Carries local additions on top of upstream until merged there. Release notes live in [GitHub Releases](https://github.com/linean/home-assistant-aquarea/releases).
 
 ## Local changes on top of upstream `main`
 
-- Coordinator raises `UpdateFailed` on transient `AuthenticationError` instead of returning `None` (prevents entity crashes during token re-login glitches).
-- Removed redundant double-refresh burst on HA startup/reload (was doubling Panasonic Cloud API load per device, risk of IP throttling).
-- Cherry-picked upstream: today energy sensor fix, aioaquarea 1.0.7.
+- Daily DHW heating and defrost cycle counter sensors (diagnostic; reset at local midnight). Upstream PR open.
 - GitHub Actions workflows dropped (CI runs upstream only).
 - Date-based release versions (e.g. `202605.3`) instead of SemVer.
 
