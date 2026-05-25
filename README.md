@@ -1,7 +1,19 @@
 # Manage Panasonic Aquarea Smart Cloud devices from Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
-![GitHub Release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/wpatrik14/home-assistant-aquarea?include_prereleases)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+![GitHub Release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/linean/home-assistant-aquarea?include_prereleases)
+
+> **Personal fork.** This repository is a fork of [wpatrik14/home-assistant-aquarea](https://github.com/wpatrik14/home-assistant-aquarea) maintained for personal use. It carries local fixes on top of upstream until they are merged there.
+>
+> **Local changes on top of upstream `main`:**
+> - Coordinator raises `UpdateFailed` on transient `AuthenticationError` instead of returning `None` (prevents entity crashes during token re-login glitches).
+> - Removed redundant double-refresh burst on HA startup/reload (was doubling Panasonic Cloud API load per device, risk of IP throttling).
+> - GitHub Actions workflows dropped (CI is run upstream only).
+> - Date-based release versions (e.g. `202605.1`) instead of SemVer.
+>
+> The `upstream` branch in this fork mirrors `wpatrik14/main` for syncing.
+>
+> **Install via HACS:** add `https://github.com/linean/home-assistant-aquarea` as a custom integration repository, then pick the desired release. For the original integration use the upstream repo instead.
 
 Panasonic Aquarea Smart Cloud is a cloud service that allows you to control your Panasonic Aquarea heat pump from your smartphone. This integration allows you to control your heat pump from Home Assistant.
 
