@@ -2,16 +2,16 @@
   "domain": "aquarea",
   "name": "Aquarea Smart Cloud",
   "codeowners": [
-    "@wpatrik14"
+    "@linean"
   ],
   "config_flow": true,
   "dependencies": [
     "recorder"
   ],
-  "documentation": "https://github.com/wpatrik14/home-assistant-aquarea",
+  "documentation": "https://github.com/linean/home-assistant-aquarea",
   "homekit": {},
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/wpatrik14/home-assistant-aquarea/issues",
+  "issue_tracker": "https://github.com/linean/home-assistant-aquarea/issues",
   "loggers": [
     "aquarea"
   ],
@@ -19,6 +19,6 @@
     "aioaquarea>=1.0.7"
   ],
   "ssdp": [],
-  "version": "202605.5",
+  "version": "202605.6",
   "zeroconf": []
 }

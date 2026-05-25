@@ -8,6 +8,13 @@ Upstream baseline: `wpatrik14/main @ 8d0e645` ("Refactoring").
 
 ---
 
+## [202605.6] — 2026-05-25
+
+### Changed
+- `manifest.json` metadata repointed to the fork: `codeowners` → `@linean`, `documentation` and `issue_tracker` URLs → `linean/home-assistant-aquarea`.
+
+---
+
 ## [202605.5] — 2026-05-25
 
 ### Changed
